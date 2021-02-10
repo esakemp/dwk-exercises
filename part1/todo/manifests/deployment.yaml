@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todoserver-dep
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todoserver
+  template:
+    metadata:
+      labels:
+        app: todoserver
+    spec:
+      volumes:
+        - name: shared-todo
+          persistentVolumeClaim:
+            claimName: todo-claim
+      containers:
+        - name: todoserver
+          image: esakemp/todo-server
+          volumeMounts:
+          - name: shared-todo
+            mountPath: /usr/src/app/files

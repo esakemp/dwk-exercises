@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pogger-dep
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pogger
+  template:
+    metadata:
+      labels:
+        app: pogger
+    spec:
+      volumes:
+        - name: shared-hash
+          persistentVolumeClaim:
+            claimName: hasher-claim
+      containers:
+        - name: pogger
+          image: esakemp/pogger
+          volumeMounts:
+          - name: shared-hash
+            mountPath: /usr/src/app/files

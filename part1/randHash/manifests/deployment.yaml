@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: randhash-dep
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: randhash
+  template:
+    metadata:
+      labels:
+        app: randhash
+    spec:
+      volumes:
+        - name: shared-hash
+          persistentVolumeClaim:
+            claimName: hasher-claim
+      containers:
+        - name: randhash-getter
+          image: esakemp/getter
+          volumeMounts:
+          - name: shared-hash
+            mountPath: /usr/src/app/files
+        - name: randhash-hasher
+          image: esakemp/hasher
+          volumeMounts:
+          - name: shared-hash
+            mountPath: /usr/src/app/files

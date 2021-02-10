@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Kube madness</title>
+
+    <style>
+      body {
+        padding-top: 50px;
+      }
+    </style>
+  </head>
+  <body>
+    <img src="/image.jpg" width="400" height="400" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <form method="POST" action="#">
+      <input type="text" name="todo" />
+      <input type="submit" value="create TODO" onclick="formSubmit(event)" />
+    </form>
+    <ul id="list">
+    </ul>
+    <script>
+      let todos = [];
+
+      $.ajax({
+        type: "GET",
+        url: "/todos",
+        success: function (data) {
+          todos = data;
+          data.forEach((todo, i) => {
+            var ul = document.getElementById("list");
+            var li = document.createElement("li");
+            li.appendChild(document.createTextNode(todo));
+            li.setAttribute("id", i);
+            ul.appendChild(li);
+          });
+        },
+      });
+
+      function formSubmit(e) {
+        e.preventDefault();
+        const formData = $("form")
+          .serializeArray()
+          .reduce((acc, curr) => {
+            const name = curr.name;
+            acc = { ...acc, [name]: curr.value };
+            return acc;
+          }, {});
+
+        $.ajax({
+          type: "POST",
+          url: "/todos",
+          data: formData,
+          success: function (data) {
+            console.log("Submission was successful.");
+            var ul = document.getElementById("list");
+            var li = document.createElement("li");
+            li.appendChild(document.createTextNode(data.todo));
+            li.setAttribute("id", `element${todos.length + 1}`);
+            ul.appendChild(li);
+            todos.push(data.todo);
+          },
+          error: function (data) {
+            console.log("An error occurred.");
+            console.log(data);
+          },
+        });
+      }
+    </script>
+  </body>
+</html>
